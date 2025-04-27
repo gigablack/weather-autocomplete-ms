@@ -1,10 +1,20 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AutocompleteModule } from './autocomplete/autocomplete.module';
+import { MongooseModule } from '@nestjs/mongoose';
+import { envs } from './config';
+import { CacheModule } from '@nestjs/cache-manager';
+import { createKeyv } from '@keyv/redis';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    AutocompleteModule,
+    MongooseModule.forRoot(envs.mongo),
+    CacheModule.register({
+      isGlobal: true,
+      stores: [createKeyv(envs.redis)],
+    }),
+  ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
